@@ -80,8 +80,8 @@ public unsafe class MapMarkerDraw {
 			return false;
 
 		Vector3 objPosition = obj->Position;
-		//if (textPosition is > 0 and < 12 && GetType() == typeof(MapMarkerDraw))
-		//	objPosition *= 2;
+		if (textPosition is > 0 and < 12 && GetType() == typeof(MapMarkerDraw))
+			objPosition *= Agent->CurrentMapSizeFactorFloat;
 
 		var info = stackalloc MapMarkerInfo[1];
 		info->MapMarker.X = (short)(objPosition.X * 16);
