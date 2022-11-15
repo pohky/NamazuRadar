@@ -12,5 +12,6 @@ namespace NamazuRadar.Plugin {
 		public int MapIconId = 60421;
 		public int MapIconScale = 0;
 		public string FilterString = string.Empty;
+		public HashSet<int> ModelCharaFilter = new() { 1793, 2226, 1830 };
 	}
 }

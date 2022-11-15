@@ -21,6 +21,9 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 
 	private static GameObject* LocalPlayer => (GameObject*)Control.Instance()->LocalPlayer;
 
+	private bool m_ModelCharaConfig;
+	private string m_ModelCharaTemp = "0";
+
 	public readonly MapMarkerDraw MapMarker;
 	public readonly MiniMapMarkerDraw MiniMapMarker;
 
@@ -58,9 +61,11 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 		if (Config.DrawOnMap)
 			DrawMapMarker();
 
+		DrawModelCharaFilter();
+
 		if (!Config.WindowVisible) return;
 		try {
-			ImGui.SetNextWindowSize(new Vector2(550, 350), ImGuiCond.FirstUseEver);
+			ImGui.SetNextWindowSize(new Vector2(600, 350), ImGuiCond.FirstUseEver);
 			if (!ImGui.Begin(Name, ref Config.WindowVisible))
 				return;
 
@@ -68,6 +73,9 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 			ImGui.InputText("Filter##NamazuFilter", ref Config.FilterString, 512);
 			ImGui.SameLine();
 			ImGui.Checkbox("IncludeNameless", ref Config.IncludeNameless);
+			ImGui.SameLine();
+			if (ImGui.Button("Config##ModelCharaConfigButton"))
+				m_ModelCharaConfig = !m_ModelCharaConfig;
 
 			ImGui.Checkbox("HideInvisible", ref Config.HideInvisible);
 			ImGui.SameLine();
@@ -133,6 +141,53 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 		}
 	}
 
+	private void DrawModelCharaFilter() {
+		if (!m_ModelCharaConfig) return;
+		try {
+			ImGui.SetNextWindowSize(new Vector2(400, 300), ImGuiCond.FirstUseEver);
+			if (!ImGui.Begin("Edit ModelChara Filter", ref m_ModelCharaConfig))
+				return;
+
+			ImGui.SetNextItemWidth(150);
+			ImGui.InputText("ModelChara Id##ModelCharaInput", ref m_ModelCharaTemp, 16);
+			ImGui.SameLine();
+			if (ImGui.Button("Add##AddModelChara") && int.TryParse(m_ModelCharaTemp, out var customId))
+				Config.ModelCharaFilter.Add(customId);
+
+			var targetId = -1;
+			var target = TargetSystem.Instance()->GetCurrentTarget();
+			if (target != null && target->IsCharacter()) {
+				var chara = (Character*)target;
+				targetId = chara->ModelCharaId_2 == -1 ? chara->ModelCharaId : chara->ModelCharaId_2;
+			}
+			ImGui.TextUnformatted($"Current Target: {targetId}");
+			ImGui.SameLine();
+			if (ImGui.Button("Add Target") && targetId >= 0)
+				Config.ModelCharaFilter.Add(targetId);
+
+			ImGui.Separator();
+			if (!ImGui.BeginTable("##ModelCharaIdTable", 2, ImGuiTableFlags.RowBg | ImGuiTableFlags.ScrollY))
+				return;
+			ImGui.TableSetupScrollFreeze(0, 1);
+			ImGui.TableSetupColumn("Id", ImGuiTableColumnFlags.WidthFixed);
+			ImGui.TableSetupColumn("##Buttons", ImGuiTableColumnFlags.WidthFixed);
+			ImGui.TableHeadersRow();
+
+			foreach (var id in Config.ModelCharaFilter.ToList()) {
+				ImGui.TableNextColumn();
+				ImGui.TextUnformatted($"{id}");
+				
+				ImGui.TableNextColumn();
+				if (ImGui.Button($"Delete##delete{id}"))
+					Config.ModelCharaFilter.Remove(id);
+			}
+
+			ImGui.EndTable();
+		} finally {
+			ImGui.End();
+		}
+	}
+
 	private void DrawMapMarker() {
 		if (LocalPlayer == null) return;
 		var objSpan = new Span<nint>(GameObjectManager.Instance()->ObjectList, 596);
@@ -173,14 +228,14 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 		return obj->RenderFlags == 0;
 	}
 
-	private static bool IsNamazu(nint address) {
+	private bool IsNamazu(nint address) {
 		if (address == 0) return false;
 		var obj = (GameObject*)address;
 		if (!obj->IsCharacter()) return false;
 		var chara = (Character*)address;
-		var id = chara->ModelCharaId;
-		var id2 = chara->ModelCharaId_2;
-		return id == 1793 || id2 == 1793 || id is 2226 or 1830;
+		
+		var id = chara->ModelCharaId_2 == -1 ? chara->ModelCharaId : chara->ModelCharaId_2;
+		return Config.ModelCharaFilter.Contains(id);
 	}
 
 	private static Vector2 WorldToDisplay(Vector3 pos) {
