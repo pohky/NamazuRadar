@@ -66,7 +66,9 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 
 			ImGui.SetNextItemWidth(250);
 			ImGui.InputText("Filter##NamazuFilter", ref Config.FilterString, 512);
-			
+			ImGui.SameLine();
+			ImGui.Checkbox("IncludeNameless", ref Config.IncludeNameless);
+
 			ImGui.Checkbox("HideInvisible", ref Config.HideInvisible);
 			ImGui.SameLine();
 			ImGui.Checkbox("SortByDistance", ref Config.SortByDistance);
@@ -102,8 +104,7 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 
 			if (Config.HideInvisible)
 				list = list.Where(IsVisible);
-			if (!string.IsNullOrWhiteSpace(Config.FilterString))
-				list = list.Where(MatchFilter);
+			list = list.Where(MatchFilter);
 			if (Config.SortByDistance)
 				list = list.OrderBy(addr => Vector3.Distance(LocalPlayer->Position, ((GameObject*)addr)->Position));
 
@@ -139,8 +140,7 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 
 		if (Config.HideInvisible)
 			list = list.Where(IsVisible);
-		if (!string.IsNullOrWhiteSpace(Config.FilterString))
-			list = list.Where(MatchFilter);
+		list = list.Where(MatchFilter);
 		var namazuList = list.ToList();
 
 		if (MapMarker.Begin()) {
@@ -160,7 +160,9 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 		if (address == 0) return false;
 		var obj = (GameObject*)address;
 		var name = Marshal.PtrToStringUTF8((nint)obj->GetName());
-		if (!string.IsNullOrWhiteSpace(name) && name.Contains(Config.FilterString, StringComparison.OrdinalIgnoreCase))
+		if (string.IsNullOrWhiteSpace(name))
+			return Config.IncludeNameless;
+		if (name.Contains(Config.FilterString, StringComparison.OrdinalIgnoreCase))
 			return true;
 		return false;
 	}

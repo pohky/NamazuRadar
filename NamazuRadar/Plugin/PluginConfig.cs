@@ -7,6 +7,7 @@ namespace NamazuRadar.Plugin {
 		public bool WindowVisible = true;
 		public bool HideInvisible = true;
 		public bool SortByDistance = true;
+		public bool IncludeNameless = true;
 		public bool DrawOnMap;
 		public int MapIconId = 60421;
 		public int MapIconScale = 0;
