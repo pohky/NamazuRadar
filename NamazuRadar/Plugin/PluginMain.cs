@@ -178,7 +178,9 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 		var obj = (GameObject*)address;
 		if (!obj->IsCharacter()) return false;
 		var chara = (Character*)address;
-		return chara->ModelCharaId == 1793 || chara->ModelCharaId_2 == 1793;
+		var id = chara->ModelCharaId;
+		var id2 = chara->ModelCharaId_2;
+		return id == 1793 || id2 == 1793 || id is 2226 or 1830;
 	}
 
 	private static Vector2 WorldToDisplay(Vector3 pos) {
