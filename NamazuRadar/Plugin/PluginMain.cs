@@ -93,6 +93,8 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 				ImGui.SetNextItemWidth(100);
 				ImGui.DragInt("Scale", ref Config.MapIconScale, 1, 0, 1000);
 				if (ImGui.IsItemHovered()) ImGui.SetTooltip("0 = Default Scale");
+				ImGui.SameLine();
+				ImGui.Checkbox("Name", ref Config.MapIconText);
 			}
 			ImGui.Separator();
 
@@ -200,13 +202,13 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 
 		if (MapMarker.Begin()) {
 			foreach (var address in namazuList)
-				MapMarker.DrawObject((GameObject*)address, (uint)Config.MapIconId, Config.MapIconScale);
+				MapMarker.DrawObject((GameObject*)address, (uint)Config.MapIconId, Config.MapIconScale, 0, (byte)(Config.MapIconText ? 3 : 0));
 			MapMarker.End();
 		}
 		
 		if (MiniMapMarker.Begin()) {
 			foreach (var address in namazuList)
-				MiniMapMarker.DrawObject((GameObject*)address, (uint)Config.MapIconId, Config.MapIconScale);
+				MiniMapMarker.DrawObject((GameObject*)address, (uint)Config.MapIconId, Config.MapIconScale, 0, (byte)(Config.MapIconText ? 3 : 0));
 			MiniMapMarker.End();
 		}
 	}
