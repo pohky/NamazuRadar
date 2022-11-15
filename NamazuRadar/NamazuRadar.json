@@ -1,0 +1,12 @@
+﻿{
+  "Author": "Pohky",
+  "Name": "NamazuRadar",
+  "InternalName": "NamazuRadar",
+  "Punchline": "Find a local Namazu in your Region",
+  "Description": "List nearby Namazu and/or show them on the Map",
+  "RepoUrl": "https://github.com/Pohky/NamazuRadar",
+  "ApplicableVersion": "any",
+  "AssemblyVersion": "1.0.0.0",
+  "DalamudApiLevel": 7,
+  "LoadPriority": 0
+}

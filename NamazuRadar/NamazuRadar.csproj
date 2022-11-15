@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6-windows</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <CopyLocalLockfileAssemblies>false</CopyLocalLockfileAssemblies>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+
+    <Author>Pohky</Author>
+    <Version>1.0.0.0</Version>
+
+    <DalamudLibPath>$(APPDATA)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="NamazuRadar.json" CopyToOutputDirectory="Always" Visible="false" />
+    <None Include="NamazuRadar.json" Link="Plugin\NamazuRadar.json" Visible="true" />
+    <None Include="packages.lock.json" Visible="false" />
+
+    <Reference Include="Dalamud" HintPath="$(DalamudLibPath)Dalamud.dll" Private="false" />
+    <Reference Include="ImGui.NET" HintPath="$(DalamudLibPath)ImGui.NET.dll" Private="false" />
+    <Reference Include="Lumina" HintPath="$(DalamudLibPath)Lumina.dll" Private="false" />
+    <Reference Include="Lumina.Excel" HintPath="$(DalamudLibPath)Lumina.Excel.dll" Private="false" />
+    <Reference Include="FFXIVClientStructs" HintPath="$(DalamudLibPath)FFXIVClientStructs.dll" Private="false" />
+  </ItemGroup>
+</Project>
