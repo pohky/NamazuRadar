@@ -46,6 +46,8 @@ public sealed unsafe class PluginMain : IDalamudPlugin {
 		PluginInterface.SavePluginConfig(Config);
 		PluginInterface.UiBuilder.Draw -= OnDraw;
 		PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
+		MapMarker.Reset();
+		MiniMapMarker.Reset();
 	}
 
 	
